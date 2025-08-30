@@ -2,30 +2,51 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Amiche per la LILT — Admin</title>
   <style>
-    :root{--pink:#e91e63;--red:#d32f2f;--border:#222;--bg:#000;--panel:#0f0f12;--muted:#c2c2c2;--white:#fff;}
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--white)}
-    .wrap{max-width:1080px;margin:24px auto;background:var(--panel);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
-    header{display:flex;align-items:center;gap:14px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
-    .header-logos{display:flex;align-items:center;gap:12px}
+    :root{
+      --pink:#e91e63;--red:#d32f2f;--border:#222;--bg:#000;--panel:#0f0f12;
+      --muted:#c2c2c2;--white:#fff;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--white)}
+    body{font-family:Inter,system-ui,Arial,sans-serif; line-height:1.35; overflow-x:hidden}
+
+    .wrap{max-width:1080px;margin:16px auto;background:var(--panel);
+      padding:20px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
+    header{display:flex;align-items:center;gap:12px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border); flex-wrap:wrap}
+    .header-logos{display:flex;align-items:center;gap:10px;flex:1 1 auto}
     .logo-plain img{height:42px;object-fit:contain;display:block}
     .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
     .logo-pill-white img{height:42px;object-fit:contain;display:block}
-    .brand{margin-left:auto;text-align:right;color:#fff}
-    .brand h1{margin:0;font-size:20px;font-weight:800}
+    .brand{flex:1 1 260px; text-align:right;color:#fff}
+    .brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
     .brand .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
-    .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
-    input[type="password"]{padding:10px 12px;border:1px solid var(--border);border-radius:10px;min-width:260px;background:#0b0b0e;color:#fff}
-    button{padding:10px 14px;border:0;border-radius:10px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
+
+    .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;align-items:center}
+    input[type="password"]{
+      padding:12px;border:1px solid var(--border);border-radius:10px;min-width:260px;background:#0b0b0e;color:#fff;font-size:16px
+    }
+    button{padding:12px 16px;border:0;border-radius:10px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;font-size:16px}
     .card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b0b0e;margin:12px 0}
-    h3{margin:8px 0}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;color:#eee}
-    .muted{color:var(--muted);font-size:13px}
+    h3{margin:8px 0;font-size:18px}
     .group-title{font-weight:900;margin-bottom:6px}
     .empty{color:#aaa;font-style:italic;padding:8px 0}
+
+    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    table{width:100%;border-collapse:collapse;min-width:640px}
+    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;color:#eee;white-space:nowrap}
+    th{font-size:13px;text-transform:uppercase;letter-spacing:.02em;color:#ddd}
+
+    @media (max-width:700px){
+      .wrap{padding:14px}
+      .brand{flex:1 1 100%; text-align:center}
+      .header-logos{justify-content:center;width:100%}
+      .row button{width:100%}
+      .row input{flex:1 1 100%}
+      .logo-plain img, .logo-pill-white img{height:36px}
+    }
   </style>
 </head>
 <body>
@@ -51,11 +72,11 @@
   </div>
 
   <script>
-    // Backend & password
+    // BACKEND + password
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec";
     const EXPECTED_KEY = "Liberamente2025!";
 
-    // Sessioni da mostrare SEMPRE
+    // Sessioni SEMPRE visibili
     const SESSIONS = [
       { time: "09:00", course: "Yoga con Angela" },
       { time: "10:00", course: "Pilates con Valeria" },
@@ -65,49 +86,39 @@
       { time: "16:00", course: "Yoga con Valentina" },
     ];
 
-    // === Normalizzazione & ricostruzione lezioni ===
+    // --- Normalizzazione e parsing robusto ---
     const norm = s => String(s||'').replace(/\s+/g,' ').replace(/—|–/g,'-').trim();
     const keyOf = (t,c) => `${t}|${c}`.toLowerCase();
 
-    // Ricostruisce un array di lezioni nel formato "HH:MM | Corso"
+    // Ricostruisce un array di lezioni nel formato "HH:MM | Corso" da qualsiasi payload
     function rebuildLessons(raw){
       if (Array.isArray(raw)) {
-        // se contiene già "|", assumo lezioni intere
         if (raw.some(x => String(x).includes('|'))) {
           return raw.map(x => String(x).trim()).filter(Boolean);
         }
-        // altrimenti: sono token "ora","corso","ora","corso"...
         const tokens = raw.flatMap(x => String(x).split('|')).map(t=>t.trim()).filter(Boolean);
         const out = [];
-        for (let i=0;i<tokens.length;i+=2){
-          if (tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`);
-        }
+        for (let i=0;i<tokens.length;i+=2){ if(tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`); }
         return out;
       }
       if (typeof raw === 'string') {
-        // può essere "09:00 | Corso | 10:00 | Corso2" oppure "09:00 — Corso | 10:00 — Corso2"
         const tokens = String(raw).split('|').map(t=>t.trim()).filter(Boolean);
         if (tokens.length >= 2) {
           const out = [];
-          for (let i=0;i<tokens.length;i+=2){
-            if (tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`);
-          }
+          for (let i=0;i<tokens.length;i+=2){ if(tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`); }
           return out;
         }
-        // fallback: prova con dash unico "HH:MM - Corso"
         const m = raw.match(/^\s*(\d{1,2}:\d{2})\s*[-—–]\s*(.+)$/);
         if (m) return [`${m[1]} | ${m[2]}`];
       }
       return [];
     }
 
-    // Parsing sicuro di una lezione "HH:MM | Corso" / "HH:MM - Corso"
     function parseLesson(s){
       const str = norm(s);
       let m = str.match(/^\s*(\d{1,2}:\d{2})\s*\|\s*(.+)$/);
       if (!m) m = str.match(/^\s*(\d{1,2}:\d{2})\s*-\s*(.+)$/);
       if (m) return { time: m[1], course: m[2] };
-      // ultima spiaggia: se inizia con orario, separa al primo spazio
       const m2 = str.match(/^(\d{1,2}:\d{2})\s+(.*)$/);
       if (m2) return { time: m2[1], course: m2[2] };
       return { time: '', course: str };
@@ -136,18 +147,18 @@
         const sessionMap = {};
         SESSIONS.forEach(s => sessionMap[keyOf(s.time, s.course)] = { ...s });
 
-        // Prepara gruppi vuoti
+        // Gruppi vuoti per tutte le sessioni
         const groups = {};
         Object.keys(sessionMap).forEach(k => groups[k] = []);
 
-        // Popola gruppi ricostruendo le lezioni di ogni iscritto
+        // Normalizza righe e ricostruisci lezioni
         const rows = json.rows.map(r => {
           const rebuilt = rebuildLessons(r.lezioni);
-          const parsed   = rebuilt.map(x => parseLesson(x));
-          const lessons  = parsed.map(p => `${p.time} | ${p.course}`);
-          return { ...r, __rebuilt: lessons, __parsed: parsed };
+          const parsed  = rebuilt.map(x => parseLesson(x));
+          return { ...r, __parsed: parsed };
         });
 
+        // Popola gruppi
         rows.forEach(r=>{
           r.__parsed.forEach(p=>{
             const k = keyOf(p.time, p.course);
@@ -155,10 +166,10 @@
           });
         });
 
-        // HTML
+        // --- HTML ---
         let html = '';
 
-        // Sezioni per corso (anche vuote)
+        // Sezioni per corso (sempre tutte)
         Object.keys(sessionMap).sort().forEach(k=>{
           const meta = sessionMap[k];
           const arr = groups[k] || [];
@@ -167,7 +178,7 @@
           if (arr.length===0){
             html += `<div class="empty">Nessun iscritto.</div>`;
           } else {
-            html += `<table>
+            html += `<div class="table-wrap"><table>
               <thead><tr>
                 <th>Nome</th><th>Cognome</th><th>Email</th><th>Consenso dati</th><th>Foto/Video</th>
               </tr></thead><tbody>`;
@@ -180,15 +191,15 @@
                 <td>${r.consenso_media ? 'SI' : 'NO'}</td>
               </tr>`;
             });
-            html += `</tbody></table>`;
+            html += `</tbody></table></div>`;
           }
           html += `</div>`;
         });
 
-        // Tutti gli iscritti (tutte info, inclusi orari + corsi)
+        // Tutti gli iscritti (con orari + corsi)
         html += `<div class="card">
           <h3>Tutti gli iscritti</h3>
-          <table>
+          <div class="table-wrap"><table>
             <thead><tr>
               <th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni (orari + corsi)</th><th>Consenso dati</th><th>Foto/Video</th>
             </tr></thead><tbody>`;
@@ -203,7 +214,7 @@
             <td>${r.consenso_media ? 'SI' : 'NO'}</td>
           </tr>`;
         });
-        html += `</tbody></table></div>`;
+        html += `</tbody></table></div></div>`;
 
         out.innerHTML = html;
 
@@ -225,3 +236,4 @@
   </script>
 </body>
 </html>
+

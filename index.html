@@ -32,8 +32,7 @@
     label{font-weight:700; display:block; margin-bottom:4px}
     input[type="text"], input[type="email"]{
       width:100%; padding:12px; border:1px solid #aaa; border-radius:12px;
-      font-size:16px; /* niente zoom iOS */
-      background:#fff; color:#000;
+      font-size:16px; background:#fff; color:#000;
     }
     input::placeholder{color:#777}
 
@@ -52,7 +51,6 @@
     .success{background:#0e2a17;border:1px solid #1f7a3e;color:#b6f0c9;padding:12px;border-radius:10px;margin-top:12px}
     .muted{color:var(--muted);font-size:14px}
 
-    ul{margin:8px 0 0 20px}
     .schedule{display:grid;gap:8px;margin:6px 0}
     .slot{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-left:5px solid var(--pink);padding:10px;border-radius:10px;background:#0b0b0e}
     .slot time{font-weight:900;width:64px}
@@ -62,7 +60,6 @@
     .step.active{display:block}
     footer{margin-top:24px;font-size:12px;color:#9a9a9a;text-align:center}
 
-    /* Mobile tweaks */
     @media (max-width:600px){
       .wrap{padding:14px}
       .brand{flex:1 1 100%; text-align:center}
@@ -113,11 +110,11 @@
       <div class="card" style="margin-top:10px">
         <h3 style="margin:0 0 6px">Consensi</h3>
         <div class="consenso">
-          <input id="consenso_dati" type="checkbox">
+          <input id="consenso_dati" type="checkbox" required aria-required="true">
           <label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label>
         </div>
         <div class="consenso">
-          <input id="consenso_media" type="checkbox">
+          <input id="consenso_media" type="checkbox" required aria-required="true">
           <label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video. *</label>
         </div>
         <p class="muted">Entrambi i consensi sono obbligatori per partecipare.</p>
@@ -160,9 +157,17 @@
       const cDati=document.getElementById('consenso_dati').checked;
       const cMedia=document.getElementById('consenso_media').checked;
       const err=document.getElementById('err1'); err.style.display='none'; err.textContent='';
-      if(!nome||!cognome||!email){err.textContent='Compila Nome, Cognome ed Email.';err.style.display='block';return;}
-      if(!cDati || !cMedia){err.textContent='Devi acconsentire sia al trattamento dati che a foto e video.';err.style.display='block';return;}
-      step1.classList.remove('active'); step2.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
+
+      if(!nome||!cognome||!email){
+        err.textContent='Compila Nome, Cognome ed Email.'; err.style.display='block'; return;
+      }
+      if(!cDati || !cMedia){
+        err.textContent='Devi acconsentire sia al trattamento dati che a foto e video.'; 
+        err.style.display='block'; return;
+      }
+      step1.classList.remove('active'); 
+      step2.classList.add('active'); 
+      window.scrollTo({top:0,behavior:'smooth'});
     });
 
     document.getElementById('back').addEventListener('click',()=>{
@@ -188,9 +193,12 @@
 
       const err=document.getElementById('err2'), ok=document.getElementById('ok');
       err.style.display='none'; ok.style.display='none';
-      if(selected.length===0||selected.length>2){err.textContent='Seleziona 1 o 2 lezioni.';err.style.display='block';return;}
 
-      // text/plain per evitare preflight su iOS/Android
+      if(selected.length===0||selected.length>2){
+        err.textContent='Seleziona 1 o 2 lezioni.';err.style.display='block';return;
+      }
+
+      // text/plain per evitare preflight CORS su mobile
       const payload={action:"register", key:ADMIN_KEY, data:{nome,cognome,email,consenso_dati,consenso_media,lezioni:selected}};
       try{
         const res=await fetch(BACKEND_URL,{
