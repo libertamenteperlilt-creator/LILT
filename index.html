@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Amiche per la LILT – Iscrizione</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#f6f7fb; color:#111;}
+    .wrap { max-width: 720px; margin: 24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.06);}
+    h1 { margin-top:0; }
+    .step { display:none; }
+    .step.active { display:block; }
+    .grid { display:grid; gap:12px;}
+    label { font-weight:600; }
+    input[type="text"], input[type="email"] { width:100%; padding:10px; border:1px solid #ccc; border-radius:10px; }
+    .consenso { display:flex; gap:10px; align-items:flex-start; }
+    .consenso input { margin-top:3px; }
+    .btns { display:flex; gap:10px; margin-top:16px;}
+    button { padding:10px 16px; border:0; border-radius:10px; cursor:pointer; font-weight:700; }
+    .primary { background:#e91e63; color:#fff; }
+    .ghost { background:#eef0f5; }
+    .note { font-size:13px; color:#555; }
+    .err { color:#d00; margin-top:8px; font-weight:700; }
+    .success { background:#e8fff1; border:1px solid #b6f0c9; padding:12px; border-radius:10px; }
+    .card { border:1px solid #eee; border-radius:12px; padding:12px; margin-bottom:10px; background:#fafbff; }
+    .muted { color:#666; font-size:14px; }
+    ul { margin:8px 0 0 20px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Amiche per la LILT — Iscrizione</h1>
+    <p class="muted">Compila i dati, dai i consensi e scegli <strong>massimo 2</strong> lezioni.</p>
+
+    <!-- STEP 1: Dati e consensi -->
+    <section id="step1" class="step active">
+      <div class="grid">
+        <div>
+          <label for="nome">Nome *</label>
+          <input id="nome" type="text" required />
+        </div>
+        <div>
+          <label for="cognome">Cognome *</label>
+          <input id="cognome" type="text" required />
+        </div>
+        <div>
+          <label for="email">Email *</label>
+          <input id="email" type="email" required />
+        </div>
+
+        <div class="card">
+          <div class="consenso">
+            <input id="consenso_dati" type="checkbox" />
+            <label for="consenso_dati">
+              Acconsento al trattamento dei dati personali ai sensi del Reg. (UE) 2016/679 (GDPR) per la gestione dell’iscrizione. *
+            </label>
+          </div>
+          <div class="consenso" style="margin-top:8px;">
+            <input id="consenso_media" type="checkbox" />
+            <label for="consenso_media">
+              Acconsento all’utilizzo di immagini e riprese video effettuate durante la manifestazione per finalità divulgative e promozionali.
+            </label>
+          </div>
+          <p class="note">Potrai revocare i consensi in qualunque momento scrivendo all’organizzazione.</p>
+        </div>
+
+        <div id="err1" class="err" style="display:none;"></div>
+        <div class="btns">
+          <button class="primary" id="toStep2">Prosegui</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Scelta lezioni -->
+    <section id="step2" class="step">
+      <h2>Scegli le lezioni (max 2)</h2>
+      <div class="card">
+        <p><strong>Calendario</strong></p>
+        <ul>
+          <li>09:00 — Yoga con Angela</li>
+          <li>10:00 — Pilates con Valeria</li>
+          <li>11:00 — Pilates con Daniela</li>
+          <li>14:00 — Pilates con Debora</li>
+          <li>15:00 — Pilates con Mara</li>
+          <li>16:00 — Yoga con Valentina</li>
+        </ul>
+      </div>
+
+      <div class="grid">
+        <label><input type="checkbox" class="lesson" value="09:00 | Yoga con Angela"> 09:00 — Yoga con Angela</label>
+        <label><input type="checkbox" class="lesson" value="10:00 | Pilates con Valeria"> 10:00 — Pilates con Valeria</label>
+        <label><input type="checkbox" class="lesson" value="11:00 | Pilates con Daniela"> 11:00 — Pilates con Daniela</label>
+        <label><input type="checkbox" class="lesson" value="14:00 | Pilates con Debora"> 14:00 — Pilates con Debora</label>
+        <label><input type="checkbox" class="lesson" value="15:00 | Pilates con Mara"> 15:00 — Pilates con Mara</label>
+        <label><input type="checkbox" class="lesson" value="16:00 | Yoga con Valentina"> 16:00 — Yoga con Valentina</label>
+      </div>
+
+      <div id="err2" class="err" style="display:none;"></div>
+      <div class="btns">
+        <button class="ghost" id="back">Indietro</button>
+        <button class="primary" id="submit">Invia iscrizione</button>
+      </div>
+
+      <div id="ok" class="success" style="display:none; margin-top:16px;"></div>
+    </section>
+  </div>
+
+  <script>
+    // *** CONFIG: incolla qui l’URL del tuo Web App Apps Script ***
+    const BACKEND_URL = "PASTE_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE"; // es: https://script.google.com/macros/s/XXXX/exec
+    const ADMIN_KEY = "cambia_questa_chiave"; // deve combaciare con lo script
+
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+
+    document.getElementById('toStep2').addEventListener('click', () => {
+      const nome = document.getElementById('nome').value.trim();
+      const cognome = document.getElementById('cognome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const cDati = document.getElementById('consenso_dati').checked;
+
+      const err = document.getElementById('err1');
+      err.style.display = 'none';
+      err.textContent = '';
+
+      if (!nome || !cognome || !email) {
+        err.textContent = 'Compila Nome, Cognome ed Email.';
+        err.style.display = 'block';
+        return;
+      }
+      if (!cDati) {
+        err.textContent = 'Il consenso al trattamento dati è obbligatorio.';
+        err.style.display = 'block';
+        return;
+      }
+
+      step1.classList.remove('active');
+      step2.classList.add('active');
+    });
+
+    document.getElementById('back').addEventListener('click', () => {
+      step2.classList.remove('active');
+      step1.classList.add('active');
+    });
+
+    // Max 2 lezioni
+    const lessonBoxes = document.querySelectorAll('.lesson');
+    lessonBoxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const selected = Array.from(lessonBoxes).filter(x => x.checked);
+        if (selected.length > 2) {
+          cb.checked = false;
+          alert('Puoi selezionare al massimo 2 lezioni.');
+        }
+      });
+    });
+
+    document.getElementById('submit').addEventListener('click', async () => {
+      const nome = document.getElementById('nome').value.trim();
+      const cognome = document.getElementById('cognome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const consenso_dati = document.getElementById('consenso_dati').checked;
+      const consenso_media = document.getElementById('consenso_media').checked;
+      const selected = Array.from(lessonBoxes).filter(x => x.checked).map(x => x.value);
+
+      const err = document.getElementById('err2');
+      const ok = document.getElementById('ok');
+      err.style.display = 'none';
+      ok.style.display = 'none';
+
+      if (selected.length === 0 || selected.length > 2) {
+        err.textContent = 'Seleziona 1 o 2 lezioni.';
+        err.style.display = 'block';
+        return;
+      }
+
+      const payload = {
+        action: "register",
+        key: ADMIN_KEY,
+        data: {
+          nome, cognome, email,
+          consenso_dati,
+          consenso_media,
+          lezioni: selected
+        }
+      };
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.ok) {
+          ok.innerHTML = "<strong>Iscrizione inviata!</strong> Ti abbiamo mandato una mail con il riepilogo.";
+          ok.style.display = 'block';
+        } else {
+          err.textContent = json.error || 'Errore durante l’invio.';
+          err.style.display = 'block';
+        }
+      } catch (e) {
+        err.textContent = 'Errore di rete o backend non raggiungibile.';
+        err.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

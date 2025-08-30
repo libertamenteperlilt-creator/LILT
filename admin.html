@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Amiche per la LILT — Admin</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#f6f7fb; color:#111;}
+    .wrap { max-width: 980px; margin: 24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.06);}
+    h1 { margin-top:0; }
+    table { width:100%; border-collapse: collapse; margin: 8px 0 24px; }
+    th, td { padding:8px 10px; border-bottom:1px solid #eee; text-align:left; }
+    .row { margin:8px 0; display:flex; gap:8px; }
+    input { padding:8px 10px; border:1px solid #ccc; border-radius:10px; width: 100%; max-width:420px;}
+    button { padding:10px 14px; border:0; border-radius:10px; font-weight:700; cursor:pointer; background:#e91e63; color:#fff;}
+    .card { border:1px solid #eee; border-radius:12px; padding:12px; margin:14px 0; background:#fafbff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Amiche per la LILT — Pannello</h1>
+    <div class="row">
+      <input id="backend" placeholder="URL Web App (Apps Script)" />
+      <input id="key" placeholder="Admin key" />
+      <button id="load">Carica iscritti</button>
+      <button id="csv">Esporta CSV</button>
+    </div>
+    <div id="out"></div>
+  </div>
+
+  <script>
+    const out = document.getElementById('out');
+
+    function dl(filename, text) {
+      const a = document.createElement('a');
+      a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+      a.download = filename;
+      a.click();
+    }
+
+    document.getElementById('load').addEventListener('click', async () => {
+      out.innerHTML = 'Carico...';
+      const backend = document.getElementById('backend').value.trim();
+      const key = document.getElementById('key').value.trim();
+      if (!backend || !key) { out.textContent = 'Inserisci backend e key.'; return; }
+
+      try {
+        const res = await fetch(`${backend}?action=list&key=${encodeURIComponent(key)}`);
+        const json = await res.json();
+        if (!json.ok) { out.textContent = json.error || 'Errore backend.'; return; }
+
+        // Raggruppa per lezione
+        const groups = {};
+        json.rows.forEach(r => {
+          (r.lezioni || []).forEach(lez => {
+            if (!groups[lez]) groups[lez] = [];
+            groups[lez].push(r);
+          });
+        });
+
+        let html = '';
+        Object.keys(groups).sort().forEach(lez => {
+          html += `<div class="card"><h3>${lez} — iscritti: ${groups[lez].length}</h3>`;
+          html += `<table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
+          groups[lez].forEach(r => {
+            html += `<tr>
+              <td>${r.nome}</td>
+              <td>${r.cognome}</td>
+              <td>${r.email}</td>
+              <td>${r.consenso_dati ? 'SI' : 'NO'}</td>
+              <td>${r.consenso_media ? 'SI' : 'NO'}</td>
+              <td>${r.ts}</td>
+            </tr>`;
+          });
+          html += `</tbody></table></div>`;
+        });
+
+        // Anche lista completa
+        html += `<div class="card"><h3>Tutti gli iscritti</h3>
+          <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
+        json.rows.forEach(r => {
+          html += `<tr>
+            <td>${r.nome}</td>
+            <td>${r.cognome}</td>
+            <td>${r.email}</td>
+            <td>${(r.lezioni||[]).join(' | ')}</td>
+            <td>${r.consenso_dati ? 'SI' : 'NO'}</td>
+            <td>${r.consenso_media ? 'SI' : 'NO'}</td>
+            <td>${r.ts}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+
+        out.innerHTML = html;
+
+        // Prepara CSV per export
+        document.getElementById('csv').onclick = () => {
+          const lines = [
+            ['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']
+          ];
+          json.rows.forEach(r => {
+            lines.push([
+              r.nome, r.cognome, r.email,
+              (r.lezioni||[]).join(' / '),
+              r.consenso_dati ? 'SI' : 'NO',
+              r.consenso_media ? 'SI' : 'NO',
+              r.ts
+            ]);
+          });
+          const csv = lines.map(a => a.map(x => `"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+          dl('iscritti_amiche_per_la_lilt.csv', csv);
+        };
+
+      } catch (e) {
+        out.textContent = 'Errore di rete o backend non raggiungibile.';
+      }
+    });
+  </script>
+</body>
+</html>
