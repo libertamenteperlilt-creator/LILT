@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Amiche per la LILT — Iscrizione</title>
   <style>
     :root{
@@ -10,36 +10,48 @@
       --muted:#c2c2c2; --border:#222; --panel:#0f0f12;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--black);color:var(--white)}
-    .wrap{max-width:880px;margin:24px auto;background:var(--panel);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
-    header{display:flex;align-items:center;gap:14px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
-    .header-logos{display:flex;align-items:center;gap:12px}
-    .logo-plain img{height:48px;object-fit:contain;display:block} /* logo1 trasparente su nero */
+    html,body{margin:0;padding:0;background:var(--black);color:var(--white)}
+    body{font-family:Inter,system-ui,Arial,sans-serif; line-height:1.35; overflow-x:hidden}
+
+    .wrap{max-width:880px;margin:16px auto;background:var(--panel);
+      padding:20px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
+    header{display:flex;align-items:center;gap:12px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border); flex-wrap:wrap}
+    .header-logos{display:flex;align-items:center;gap:10px;flex:1 1 auto}
+    .logo-plain img{height:42px;object-fit:contain;display:block}
     .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
-    .logo-pill-white img{height:48px;object-fit:contain;display:block} /* logo2 con bianco dietro */
-    .brand{margin-left:auto;text-align:right;color:#fff}
+    .logo-pill-white img{height:42px;object-fit:contain;display:block}
+    .brand{flex:1 1 220px; text-align:right;color:#fff}
     .brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
     .brand span{color:var(--pink);font-weight:700}
     .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-top:6px}
-    h2{margin:14px 0 8px}
+
+    h2{margin:14px 0 8px;font-size:20px}
     .grid{display:grid;gap:12px}
     @media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
-    label{font-weight:700}
-    input[type="text"],input[type="email"]{
-      width:100%;padding:12px;border:1px solid #aaa;border-radius:12px;font-size:15px;
-      background:#fff;color:#000; /* SFONDO BIANCO */
+
+    label{font-weight:700; display:block; margin-bottom:4px}
+    input[type="text"], input[type="email"]{
+      width:100%; padding:12px; border:1px solid #aaa; border-radius:12px;
+      font-size:16px; /* niente zoom iOS */
+      background:#fff; color:#000;
     }
     input::placeholder{color:#777}
+
     .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:#0b0b0e}
-    .consenso{display:flex;gap:10px;align-items:flex-start;margin:6px 0}
-    .consenso input{margin-top:4px}
-    .btns{display:flex;gap:10px;margin-top:14px}
-    button{padding:11px 16px;border:0;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px}
+    .consenso{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+    .consenso input[type="checkbox"]{
+      width:20px;height:20px; margin-top:2px; accent-color: var(--pink);
+      flex:0 0 auto;
+    }
+    .btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    button{padding:12px 16px;border:0;border-radius:12px;cursor:pointer;font-weight:800;font-size:16px}
     .primary{background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
     .ghost{background:#1a1a1f;color:#fff;border:1px solid var(--border)}
+
     .err{color:#ff6b6b;margin-top:8px;font-weight:800}
     .success{background:#0e2a17;border:1px solid #1f7a3e;color:#b6f0c9;padding:12px;border-radius:10px;margin-top:12px}
     .muted{color:var(--muted);font-size:14px}
+
     ul{margin:8px 0 0 20px}
     .schedule{display:grid;gap:8px;margin:6px 0}
     .slot{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-left:5px solid var(--pink);padding:10px;border-radius:10px;background:#0b0b0e}
@@ -49,7 +61,16 @@
     .step{display:none}
     .step.active{display:block}
     footer{margin-top:24px;font-size:12px;color:#9a9a9a;text-align:center}
-    a{color:#ff9ec0}
+
+    /* Mobile tweaks */
+    @media (max-width:600px){
+      .wrap{padding:14px}
+      .brand{flex:1 1 100%; text-align:center}
+      .header-logos{justify-content:center; width:100%}
+      .btns button{width:100%}
+      .logo-plain img, .logo-pill-white img{height:36px}
+      h2{font-size:18px}
+    }
   </style>
 </head>
 <body>
@@ -91,9 +112,15 @@
       </div>
       <div class="card" style="margin-top:10px">
         <h3 style="margin:0 0 6px">Consensi</h3>
-        <div class="consenso"><input id="consenso_dati" type="checkbox"><label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label></div>
-        <div class="consenso"><input id="consenso_media" type="checkbox"><label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video. *</label></div>
-        <p class="muted">Puoi revocare i consensi in qualsiasi momento scrivendo all’organizzazione.</p>
+        <div class="consenso">
+          <input id="consenso_dati" type="checkbox">
+          <label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label>
+        </div>
+        <div class="consenso">
+          <input id="consenso_media" type="checkbox">
+          <label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video. *</label>
+        </div>
+        <p class="muted">Entrambi i consensi sono obbligatori per partecipare.</p>
       </div>
       <div id="err1" class="err" style="display:none;"></div>
       <div class="btns"><button class="primary" id="toStep2">Prosegui alla scelta lezioni</button></div>
@@ -131,12 +158,10 @@
       const cognome=document.getElementById('cognome').value.trim();
       const email=document.getElementById('email').value.trim();
       const cDati=document.getElementById('consenso_dati').checked;
+      const cMedia=document.getElementById('consenso_media').checked;
       const err=document.getElementById('err1'); err.style.display='none'; err.textContent='';
       if(!nome||!cognome||!email){err.textContent='Compila Nome, Cognome ed Email.';err.style.display='block';return;}
-      if(!cDati || !cMedia){
-		err.textContent='Devi acconsentire sia al trattamento dati che a foto e video.'; 
-		err.style.display='block'; return;
-		}
+      if(!cDati || !cMedia){err.textContent='Devi acconsentire sia al trattamento dati che a foto e video.';err.style.display='block';return;}
       step1.classList.remove('active'); step2.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
     });
 
@@ -165,7 +190,7 @@
       err.style.display='none'; ok.style.display='none';
       if(selected.length===0||selected.length>2){err.textContent='Seleziona 1 o 2 lezioni.';err.style.display='block';return;}
 
-      // IMPORTANTE: text/plain per evitare preflight CORS
+      // text/plain per evitare preflight su iOS/Android
       const payload={action:"register", key:ADMIN_KEY, data:{nome,cognome,email,consenso_dati,consenso_media,lezioni:selected}};
       try{
         const res=await fetch(BACKEND_URL,{
@@ -179,12 +204,10 @@
           ok.style.display='block';
           lessonBoxes.forEach(x=>x.disabled=true);
         }else{
-          err.textContent=json.error||'Errore durante l’invio.';
-          err.style.display='block';
+          err.textContent=json.error||'Errore durante l’invio.'; err.style.display='block';
         }
       }catch(e){
-        err.textContent='Errore di rete o backend non raggiungibile.';
-        err.style.display='block';
+        err.textContent='Errore di rete o backend non raggiungibile.'; err.style.display='block';
       }
     });
   </script>
