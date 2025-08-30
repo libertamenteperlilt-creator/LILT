@@ -92,7 +92,7 @@
       <div class="card" style="margin-top:10px">
         <h3 style="margin:0 0 6px">Consensi</h3>
         <div class="consenso"><input id="consenso_dati" type="checkbox"><label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label></div>
-        <div class="consenso"><input id="consenso_media" type="checkbox"><label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video.</label></div>
+        <div class="consenso"><input id="consenso_media" type="checkbox"><label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video. *</label></div>
         <p class="muted">Puoi revocare i consensi in qualsiasi momento scrivendo all’organizzazione.</p>
       </div>
       <div id="err1" class="err" style="display:none;"></div>
@@ -133,7 +133,10 @@
       const cDati=document.getElementById('consenso_dati').checked;
       const err=document.getElementById('err1'); err.style.display='none'; err.textContent='';
       if(!nome||!cognome||!email){err.textContent='Compila Nome, Cognome ed Email.';err.style.display='block';return;}
-      if(!cDati){err.textContent='Il consenso al trattamento dati è obbligatorio.';err.style.display='block';return;}
+      if(!cDati || !cMedia){
+		err.textContent='Devi acconsentire sia al trattamento dati che a foto e video.'; 
+		err.style.display='block'; return;
+		}
       step1.classList.remove('active'); step2.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
     });
 
