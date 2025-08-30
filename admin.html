@@ -55,33 +55,65 @@
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec";
     const EXPECTED_KEY = "Liberamente2025!";
 
-    // Sessioni fisse (verranno anche normalizzate per confronto)
+    // Sessioni da mostrare SEMPRE
     const SESSIONS = [
-      { key: "09:00 | Yoga con Angela",  time: "09:00", course: "Yoga con Angela" },
-      { key: "10:00 | Pilates con Valeria", time: "10:00", course: "Pilates con Valeria" },
-      { key: "11:00 | Pilates con Daniela", time: "11:00", course: "Pilates con Daniela" },
-      { key: "14:00 | Pilates con Debora",  time: "14:00", course: "Pilates con Debora" },
-      { key: "15:00 | Pilates con Mara",    time: "15:00", course: "Pilates con Mara" },
-      { key: "16:00 | Yoga con Valentina",  time: "16:00", course: "Yoga con Valentina" },
+      { time: "09:00", course: "Yoga con Angela" },
+      { time: "10:00", course: "Pilates con Valeria" },
+      { time: "11:00", course: "Pilates con Daniela" },
+      { time: "14:00", course: "Pilates con Debora" },
+      { time: "15:00", course: "Pilates con Mara" },
+      { time: "16:00", course: "Yoga con Valentina" },
     ];
 
+    // === Normalizzazione & ricostruzione lezioni ===
+    const norm = s => String(s||'').replace(/\s+/g,' ').replace(/—|–/g,'-').trim();
+    const keyOf = (t,c) => `${t}|${c}`.toLowerCase();
+
+    // Ricostruisce un array di lezioni nel formato "HH:MM | Corso"
+    function rebuildLessons(raw){
+      if (Array.isArray(raw)) {
+        // se contiene già "|", assumo lezioni intere
+        if (raw.some(x => String(x).includes('|'))) {
+          return raw.map(x => String(x).trim()).filter(Boolean);
+        }
+        // altrimenti: sono token "ora","corso","ora","corso"...
+        const tokens = raw.flatMap(x => String(x).split('|')).map(t=>t.trim()).filter(Boolean);
+        const out = [];
+        for (let i=0;i<tokens.length;i+=2){
+          if (tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`);
+        }
+        return out;
+      }
+      if (typeof raw === 'string') {
+        // può essere "09:00 | Corso | 10:00 | Corso2" oppure "09:00 — Corso | 10:00 — Corso2"
+        const tokens = String(raw).split('|').map(t=>t.trim()).filter(Boolean);
+        if (tokens.length >= 2) {
+          const out = [];
+          for (let i=0;i<tokens.length;i+=2){
+            if (tokens[i+1]) out.push(`${tokens[i]} | ${tokens[i+1]}`);
+          }
+          return out;
+        }
+        // fallback: prova con dash unico "HH:MM - Corso"
+        const m = raw.match(/^\s*(\d{1,2}:\d{2})\s*[-—–]\s*(.+)$/);
+        if (m) return [`${m[1]} | ${m[2]}`];
+      }
+      return [];
+    }
+
+    // Parsing sicuro di una lezione "HH:MM | Corso" / "HH:MM - Corso"
+    function parseLesson(s){
+      const str = norm(s);
+      let m = str.match(/^\s*(\d{1,2}:\d{2})\s*\|\s*(.+)$/);
+      if (!m) m = str.match(/^\s*(\d{1,2}:\d{2})\s*-\s*(.+)$/);
+      if (m) return { time: m[1], course: m[2] };
+      // ultima spiaggia: se inizia con orario, separa al primo spazio
+      const m2 = str.match(/^(\d{1,2}:\d{2})\s+(.*)$/);
+      if (m2) return { time: m2[1], course: m2[2] };
+      return { time: '', course: str };
+    }
+
     const out = document.getElementById('out');
-
-    // Normalizza stringhe lezione (uniforma dash, spazi, pipe)
-    function normLesson(str){
-      return String(str||'')
-        .replace(/—|–/g,'-')       // tutti i trattini -> '-'
-        .replace(/\s*\|\s*/g,'|')  // pipe senza spazi
-        .replace(/\s+/g,' ')       // spazi multipli -> singolo
-        .trim();
-    }
-
-    // Estrae time & course da una stringa normalizzata "09:00|Yoga con Angela"
-    function parseLesson(str){
-      const s = normLesson(str);
-      const [t, c] = s.split('|');
-      return { time:(t||'').trim(), course:(c||'').trim() };
-    }
 
     function dl(filename,text){
       const a=document.createElement('a');
@@ -100,35 +132,39 @@
         const json = await res.json();
         if(!json.ok){ out.textContent=json.error || 'Errore backend.'; return; }
 
-        // Prepara gruppi per TUTTE le sessioni (anche vuote), usando chiave normalizzata
-        const sessionMap = {}; // chiave normalizzata -> {time,course,rawKey}
-        SESSIONS.forEach(s=>{
-          const nkey = normLesson(s.key.replace('|','|')); // già in formato "HH:MM | Corso"
-          sessionMap[nkey] = { time:s.time, course:s.course, rawKey:s.key };
-        });
+        // Mappa sessioni fisse
+        const sessionMap = {};
+        SESSIONS.forEach(s => sessionMap[keyOf(s.time, s.course)] = { ...s });
 
+        // Prepara gruppi vuoti
         const groups = {};
         Object.keys(sessionMap).forEach(k => groups[k] = []);
 
-        // Inserisci ogni iscritto nelle sessioni corrispondenti (normalizzando i valori dal backend)
-        json.rows.forEach(r=>{
-          (r.lezioni||[]).forEach(lez=>{
-            const n = normLesson(lez);
-            if (groups[n]) groups[n].push(r);
+        // Popola gruppi ricostruendo le lezioni di ogni iscritto
+        const rows = json.rows.map(r => {
+          const rebuilt = rebuildLessons(r.lezioni);
+          const parsed   = rebuilt.map(x => parseLesson(x));
+          const lessons  = parsed.map(p => `${p.time} | ${p.course}`);
+          return { ...r, __rebuilt: lessons, __parsed: parsed };
+        });
+
+        rows.forEach(r=>{
+          r.__parsed.forEach(p=>{
+            const k = keyOf(p.time, p.course);
+            if (groups[k]) groups[k].push(r);
           });
         });
 
-        // Costruzione HTML
+        // HTML
         let html = '';
 
-        // Sezioni per corso (sempre tutte)
-        Object.keys(sessionMap).sort().forEach(nkey=>{
-          const meta = sessionMap[nkey];
-          const arr = groups[nkey] || [];
+        // Sezioni per corso (anche vuote)
+        Object.keys(sessionMap).sort().forEach(k=>{
+          const meta = sessionMap[k];
+          const arr = groups[k] || [];
           html += `<div class="card">
             <div class="group-title">${meta.time} — ${meta.course} — iscritti: ${arr.length}</div>`;
-
-          if(arr.length===0){
+          if (arr.length===0){
             html += `<div class="empty">Nessun iscritto.</div>`;
           } else {
             html += `<table>
@@ -149,20 +185,15 @@
           html += `</div>`;
         });
 
-        // Tutti gli iscritti (tutte le info, inclusi orari + corsi)
+        // Tutti gli iscritti (tutte info, inclusi orari + corsi)
         html += `<div class="card">
           <h3>Tutti gli iscritti</h3>
           <table>
             <thead><tr>
               <th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni (orari + corsi)</th><th>Consenso dati</th><th>Foto/Video</th>
             </tr></thead><tbody>`;
-
-        json.rows.forEach(r=>{
-          // Ricostruisco la lista lezioni normalizzando ma mantenendo "HH:MM — Corso" per leggibilità
-          const pretty = (r.lezioni||[]).map(z=>{
-            const p = parseLesson(z);
-            return `${p.time} — ${p.course}`;
-          }).join(' | ');
+        rows.forEach(r=>{
+          const pretty = r.__parsed.map(p => `${p.time} — ${p.course}`).join(' | ');
           html += `<tr>
             <td>${r.nome}</td>
             <td>${r.cognome}</td>
@@ -172,7 +203,6 @@
             <td>${r.consenso_media ? 'SI' : 'NO'}</td>
           </tr>`;
         });
-
         html += `</tbody></table></div>`;
 
         out.innerHTML = html;
@@ -180,11 +210,8 @@
         // CSV export (senza timestamp)
         document.getElementById('csv').onclick = () => {
           const lines = [['Nome','Cognome','Email','Lezioni (orari + corsi)','Consenso_dati','Consenso_media']];
-          json.rows.forEach(r=>{
-            const pretty = (r.lezioni||[]).map(z=>{
-              const p = parseLesson(z);
-              return `${p.time} - ${p.course}`;
-            }).join(' / ');
+          rows.forEach(r=>{
+            const pretty = r.__parsed.map(p => `${p.time} - ${p.course}`).join(' / ');
             lines.push([ r.nome, r.cognome, r.email, pretty, r.consenso_dati?'SI':'NO', r.consenso_media?'SI':'NO' ]);
           });
           const csv = lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
