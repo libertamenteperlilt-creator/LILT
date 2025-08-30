@@ -10,14 +10,14 @@
     .wrap{max-width:1080px;margin:24px auto;background:var(--panel);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
     header{display:flex;align-items:center;gap:14px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
     .header-logos{display:flex;align-items:center;gap:12px}
-    .logo-plain img{height:42px;object-fit:contain;display:block}                 /* logo1: trasparente */
+    .logo-plain img{height:42px;object-fit:contain;display:block}
     .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
-    .logo-pill-white img{height:42px;object-fit:contain;display:block}            /* logo2: con bianco dietro */
+    .logo-pill-white img{height:42px;object-fit:contain;display:block}
     .brand{margin-left:auto;text-align:right;color:#fff}
     .brand h1{margin:0;font-size:20px;font-weight:800}
     .brand .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
-    .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
-    input{padding:10px 12px;border:1px solid var(--border);border-radius:10px;min-width:260px;background:#0b0b0e;color:#fff}
+    .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+    input[type="password"]{padding:10px 12px;border:1px solid var(--border);border-radius:10px;min-width:260px;background:#0b0b0e;color:#fff}
     button{padding:10px 14px;border:0;border-radius:10px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
     .card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b0b0e;margin:12px 0}
     h3{margin:8px 0}
@@ -40,17 +40,18 @@
     </header>
 
     <div class="row">
-      <input id="backend" placeholder="URL Web App (Apps Script)" value="https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec">
-      <input id="key" placeholder="Admin key" value="Liberamente2025!">
-      <button id="load">Carica iscritti</button>
+      <input id="key" type="password" placeholder="Password organizzatori">
+      <button id="load">Mostra iscritti</button>
       <button id="csv">Esporta CSV</button>
     </div>
-    <p class="muted">Suggerimento: salva la pagina con URL e key precompilati.</p>
 
-    <div id="out" class="card">Pronto.</div>
+    <div id="out" class="card">Inserisci la password e premi “Mostra iscritti”.</div>
   </div>
 
   <script>
+    // Backend nascosto (hardcoded) + chiave attesa
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec";
+    const EXPECTED_KEY = "Liberamente2025!";
     const out=document.getElementById('out');
 
     function dl(filename,text){
@@ -61,12 +62,12 @@
 
     document.getElementById('load').addEventListener('click',async()=>{
       out.textContent='Carico...';
-      const backend=document.getElementById('backend').value.trim();
       const key=document.getElementById('key').value.trim();
-      if(!backend||!key){ out.textContent='Inserisci backend e key.'; return; }
+      if(!key){ out.textContent='Inserisci la password.'; return; }
+      if(key!==EXPECTED_KEY){ out.textContent='Password errata.'; return; }
 
       try{
-        const res=await fetch(`${backend}?action=list&key=${encodeURIComponent(key)}`);
+        const res=await fetch(`${BACKEND_URL}?action=list&key=${encodeURIComponent(key)}`);
         const json=await res.json();
         if(!json.ok){ out.textContent=json.error||'Errore backend.'; return; }
 
@@ -131,3 +132,4 @@
   </script>
 </body>
 </html>
+
