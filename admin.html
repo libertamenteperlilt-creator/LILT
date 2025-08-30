@@ -5,64 +5,82 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Amiche per la LILT — Admin</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#f6f7fb; color:#111;}
-    .wrap { max-width: 980px; margin: 24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.06);}
-    h1 { margin-top:0; }
-    table { width:100%; border-collapse: collapse; margin: 8px 0 24px; }
-    th, td { padding:8px 10px; border-bottom:1px solid #eee; text-align:left; }
-    .row { margin:8px 0; display:flex; gap:8px; }
-    input { padding:8px 10px; border:1px solid #ccc; border-radius:10px; width: 100%; max-width:420px;}
-    button { padding:10px 14px; border:0; border-radius:10px; font-weight:700; cursor:pointer; background:#e91e63; color:#fff;}
-    .card { border:1px solid #eee; border-radius:12px; padding:12px; margin:14px 0; background:#fafbff; }
+    :root{
+      --pink:#e91e63; --red:#d32f2f; --border:#eee; --bg:#f7f7fa; --muted:#666; --white:#fff; --black:#111;
+    }
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--black)}
+    .wrap{max-width:1080px;margin:24px auto;background:var(--white);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    header{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--border);padding-bottom:12px;margin-bottom:16px}
+    header img{height:48px;object-fit:contain}
+    .brand{margin-left:auto;text-align:right}
+    .brand h1{margin:0;font-size:20px;font-weight:800}
+    .brand .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
+    .row{display:flex;flex-wrap:wrap;gap:8px}
+    input{padding:10px 12px;border:1px solid #ccc;border-radius:10px;min-width:260px}
+    button{padding:10px 14px;border:0;border-radius:10px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
+    .card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;margin:12px 0}
+    h3{margin:8px 0}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+    .muted{color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Amiche per la LILT — Pannello</h1>
+    <header>
+      <img src="logo1.webp" alt="Logo 1">
+      <img src="logo2.png" alt="Logo 2">
+      <div class="brand">
+        <h1>Amiche per la LILT — Pannello</h1>
+        <div class="badge">Elenco partecipanti</div>
+      </div>
+    </header>
+
     <div class="row">
-      <input id="backend" placeholder="URL Web App (Apps Script)" />
-      <input id="key" placeholder="Admin key" />
+      <input id="backend" placeholder="URL Web App (Apps Script)">
+      <input id="key" placeholder="Admin key">
       <button id="load">Carica iscritti</button>
       <button id="csv">Esporta CSV</button>
     </div>
-    <div id="out"></div>
+    <p class="muted">Suggerimento: salva questa pagina nei preferiti con l’URL e la key già compilati.</p>
+
+    <div id="out" class="card">Pronto.</div>
   </div>
 
   <script>
     const out = document.getElementById('out');
 
-    function dl(filename, text) {
+    function dl(filename, text){
       const a = document.createElement('a');
       a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-      a.download = filename;
-      a.click();
+      a.download = filename; a.click();
     }
 
     document.getElementById('load').addEventListener('click', async () => {
-      out.innerHTML = 'Carico...';
+      out.textContent = 'Carico...';
       const backend = document.getElementById('backend').value.trim();
       const key = document.getElementById('key').value.trim();
-      if (!backend || !key) { out.textContent = 'Inserisci backend e key.'; return; }
+      if(!backend || !key){ out.textContent = 'Inserisci backend e key.'; return; }
 
-      try {
+      try{
         const res = await fetch(`${backend}?action=list&key=${encodeURIComponent(key)}`);
         const json = await res.json();
-        if (!json.ok) { out.textContent = json.error || 'Errore backend.'; return; }
+        if(!json.ok){ out.textContent = json.error || 'Errore backend.'; return; }
 
-        // Raggruppa per lezione
+        // Raggruppo per lezione
         const groups = {};
-        json.rows.forEach(r => {
-          (r.lezioni || []).forEach(lez => {
-            if (!groups[lez]) groups[lez] = [];
+        json.rows.forEach(r=>{
+          (r.lezioni||[]).forEach(lez=>{
+            if(!groups[lez]) groups[lez]=[];
             groups[lez].push(r);
           });
         });
 
         let html = '';
-        Object.keys(groups).sort().forEach(lez => {
+        Object.keys(groups).sort().forEach(lez=>{
           html += `<div class="card"><h3>${lez} — iscritti: ${groups[lez].length}</h3>`;
           html += `<table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
-          groups[lez].forEach(r => {
+          groups[lez].forEach(r=>{
             html += `<tr>
               <td>${r.nome}</td>
               <td>${r.cognome}</td>
@@ -75,10 +93,9 @@
           html += `</tbody></table></div>`;
         });
 
-        // Anche lista completa
         html += `<div class="card"><h3>Tutti gli iscritti</h3>
           <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
-        json.rows.forEach(r => {
+        json.rows.forEach(r=>{
           html += `<tr>
             <td>${r.nome}</td>
             <td>${r.cognome}</td>
@@ -93,25 +110,16 @@
 
         out.innerHTML = html;
 
-        // Prepara CSV per export
         document.getElementById('csv').onclick = () => {
-          const lines = [
-            ['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']
-          ];
-          json.rows.forEach(r => {
-            lines.push([
-              r.nome, r.cognome, r.email,
-              (r.lezioni||[]).join(' / '),
-              r.consenso_dati ? 'SI' : 'NO',
-              r.consenso_media ? 'SI' : 'NO',
-              r.ts
-            ]);
+          const lines = [['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']];
+          json.rows.forEach(r=>{
+            lines.push([r.nome,r.cognome,r.email,(r.lezioni||[]).join(' / '),r.consenso_dati?'SI':'NO',r.consenso_media?'SI':'NO',r.ts]);
           });
-          const csv = lines.map(a => a.map(x => `"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+          const csv = lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
           dl('iscritti_amiche_per_la_lilt.csv', csv);
         };
 
-      } catch (e) {
+      }catch(e){
         out.textContent = 'Errore di rete o backend non raggiungibile.';
       }
     });
