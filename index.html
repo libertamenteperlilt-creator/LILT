@@ -4,59 +4,59 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Amiche per la LILT — Iscrizione</title>
-  <meta name="description" content="Iscrizione all'evento Amiche per la LILT">
   <style>
     :root{
-      --pink:#e91e63;
-      --red:#d32f2f;
-      --black:#111;
-      --white:#fff;
-      --bg:#f7f7fa;
-      --muted:#666;
-      --border:#eee;
+      --pink:#e91e63; --red:#d32f2f; --black:#000; --white:#fff; --muted:#c2c2c2; --border:#222; --panel:#0f0f12;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--black)}
-    .wrap{max-width:880px;margin:24px auto;background:var(--white);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-    header{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--border);padding-bottom:12px;margin-bottom:16px}
-    header img{height:54px;object-fit:contain}
-    .brand{margin-left:auto;text-align:right}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--black);color:var(--white)}
+    .wrap{max-width:880px;margin:24px auto;background:var(--panel);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
+    header{display:flex;align-items:center;gap:14px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
+    .header-logos{display:flex;align-items:center;gap:12px}
+    .logo-plain img{height:48px;object-fit:contain;display:block}               /* logo1: trasparente, senza pillola */
+    .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+    .logo-pill-white img{height:48px;object-fit:contain;display:block}         /* logo2: con sfondo bianco */
+    .brand{margin-left:auto;text-align:right;color:#fff}
     .brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
     .brand span{color:var(--pink);font-weight:700}
-    .badge{display:inline-block;background:var(--pink);color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-top:6px}
+    .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-top:6px}
     h2{margin:14px 0 8px}
     .grid{display:grid;gap:12px}
     @media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
     label{font-weight:700}
     input[type="text"],input[type="email"]{
-      width:100%;padding:12px 12px;border:1px solid #ccc;border-radius:12px;font-size:15px
+      width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:15px;background:#0b0b0e;color:#fff;
     }
-    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fff}
+    input::placeholder{color:#888}
+    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:#0b0b0e}
     .consenso{display:flex;gap:10px;align-items:flex-start;margin:6px 0}
     .consenso input{margin-top:4px}
     .btns{display:flex;gap:10px;margin-top:14px}
     button{padding:11px 16px;border:0;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px}
     .primary{background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
-    .ghost{background:#f0f1f5}
-    .err{color:#d00;margin-top:8px;font-weight:800}
-    .success{background:#e8fff1;border:1px solid #b6f0c9;padding:12px;border-radius:10px;margin-top:12px}
+    .ghost{background:#1a1a1f;color:#fff;border:1px solid var(--border)}
+    .err{color:#ff6b6b;margin-top:8px;font-weight:800}
+    .success{background:#0e2a17;border:1px solid #1f7a3e;color:#b6f0c9;padding:12px;border-radius:10px;margin-top:12px}
     .muted{color:var(--muted);font-size:14px}
     ul{margin:8px 0 0 20px}
     .schedule{display:grid;gap:8px;margin:6px 0}
-    .slot{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-left:5px solid var(--pink);padding:10px;border-radius:10px;background:#fff}
+    .slot{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-left:5px solid var(--pink);padding:10px;border-radius:10px;background:#0b0b0e}
     .slot time{font-weight:900;width:64px}
     .slot .type{font-weight:800}
     .divider{height:1px;background:var(--border);margin:12px 0}
     .step{display:none}
     .step.active{display:block}
-    footer{margin-top:24px;font-size:12px;color:#777;text-align:center}
+    footer{margin-top:24px;font-size:12px;color:#9a9a9a;text-align:center}
+    a{color:#ff9ec0}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <img src="logo1.webp" alt="Logo 1">
-      <img src="logo2.png" alt="Logo 2">
+      <div class="header-logos">
+        <span class="logo-plain"><img src="logo1.webp" alt="Logo 1"></span>
+        <span class="logo-pill-white"><img src="logo2.png" alt="Logo 2"></span>
+      </div>
       <div class="brand">
         <h1><span>Amiche</span> per la LILT</h1>
         <div class="badge">Iscrizione ufficiale</div>
@@ -68,12 +68,12 @@
       <h2>Calendario lezioni</h2>
       <p class="muted">Le lezioni si selezionano <strong>dopo</strong> aver inserito i dati e i consensi (max 2).</p>
       <div class="schedule">
-        <div class="slot"><time>09:00</time> <div><div class="type">Yoga</div><div class="muted">con Angela</div></div></div>
-        <div class="slot"><time>10:00</time> <div><div class="type">Pilates</div><div class="muted">con Valeria</div></div></div>
-        <div class="slot"><time>11:00</time> <div><div class="type">Pilates</div><div class="muted">con Daniela</div></div></div>
-        <div class="slot"><time>14:00</time> <div><div class="type">Pilates</div><div class="muted">con Debora</div></div></div>
-        <div class="slot"><time>15:00</time> <div><div class="type">Pilates</div><div class="muted">con Mara</div></div></div>
-        <div class="slot"><time>16:00</time> <div><div class="type">Yoga</div><div class="muted">con Valentina</div></div></div>
+        <div class="slot"><time>09:00</time><div><div class="type">Yoga</div><div class="muted">con Angela</div></div></div>
+        <div class="slot"><time>10:00</time><div><div class="type">Pilates</div><div class="muted">con Valeria</div></div></div>
+        <div class="slot"><time>11:00</time><div><div class="type">Pilates</div><div class="muted">con Daniela</div></div></div>
+        <div class="slot"><time>14:00</time><div><div class="type">Pilates</div><div class="muted">con Debora</div></div></div>
+        <div class="slot"><time>15:00</time><div><div class="type">Pilates</div><div class="muted">con Mara</div></div></div>
+        <div class="slot"><time>16:00</time><div><div class="type">Yoga</div><div class="muted">con Valentina</div></div></div>
       </div>
     </section>
 
@@ -83,41 +83,18 @@
     <section id="step1" class="step active">
       <h2>1) Dati partecipante</h2>
       <div class="grid two">
-        <div>
-          <label for="nome">Nome *</label>
-          <input id="nome" type="text" autocomplete="given-name" required />
-        </div>
-        <div>
-          <label for="cognome">Cognome *</label>
-          <input id="cognome" type="text" autocomplete="family-name" required />
-        </div>
-        <div style="grid-column:1/-1">
-          <label for="email">Email *</label>
-          <input id="email" type="email" autocomplete="email" required />
-        </div>
+        <div><label for="nome">Nome *</label><input id="nome" type="text" autocomplete="given-name" required></div>
+        <div><label for="cognome">Cognome *</label><input id="cognome" type="text" autocomplete="family-name" required></div>
+        <div style="grid-column:1/-1"><label for="email">Email *</label><input id="email" type="email" autocomplete="email" required></div>
       </div>
-
       <div class="card" style="margin-top:10px">
         <h3 style="margin:0 0 6px">Consensi</h3>
-        <div class="consenso">
-          <input id="consenso_dati" type="checkbox" />
-          <label for="consenso_dati">
-            Acconsento al trattamento dei dati personali ai sensi del Reg. (UE) 2016/679 (GDPR) per la gestione dell’iscrizione. *
-          </label>
-        </div>
-        <div class="consenso">
-          <input id="consenso_media" type="checkbox" />
-          <label for="consenso_media">
-            Acconsento all’utilizzo di immagini e riprese video effettuate durante la manifestazione per finalità divulgative e promozionali.
-          </label>
-        </div>
+        <div class="consenso"><input id="consenso_dati" type="checkbox"><label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label></div>
+        <div class="consenso"><input id="consenso_media" type="checkbox"><label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video.</label></div>
         <p class="muted">Puoi revocare i consensi in qualsiasi momento scrivendo all’organizzazione.</p>
       </div>
-
       <div id="err1" class="err" style="display:none;"></div>
-      <div class="btns">
-        <button class="primary" id="toStep2">Prosegui alla scelta lezioni</button>
-      </div>
+      <div class="btns"><button class="primary" id="toStep2">Prosegui alla scelta lezioni</button></div>
     </section>
 
     <!-- STEP 2: Scelta lezioni (max 2) + invio -->
@@ -131,13 +108,8 @@
         <label><input type="checkbox" class="lesson" value="15:00 | Pilates con Mara"> 15:00 — Pilates con Mara</label>
         <label><input type="checkbox" class="lesson" value="16:00 | Yoga con Valentina"> 16:00 — Yoga con Valentina</label>
       </div>
-
       <div id="err2" class="err" style="display:none;"></div>
-      <div class="btns">
-        <button class="ghost" id="back">Indietro</button>
-        <button class="primary" id="submit">Invia iscrizione</button>
-      </div>
-
+      <div class="btns"><button class="ghost" id="back">Indietro</button><button class="primary" id="submit">Invia iscrizione</button></div>
       <div id="ok" class="success" style="display:none;"></div>
     </section>
 
@@ -146,86 +118,65 @@
 
   <script>
     // ======= CONFIG =======
-    const BACKEND_URL = "PASTE_APPS_SCRIPT_WEB_APP_URL_HERE"; // INCOLLA l'URL della tua Web App (Apps Script)
-    const ADMIN_KEY = "Liberamente2025!"; // deve combaciare con Code.gs
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec";
+    const ADMIN_KEY   = "Liberamente2025!";
 
     // ======= UI logic =======
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
+    const step1=document.getElementById('step1'), step2=document.getElementById('step2');
 
-    document.getElementById('toStep2').addEventListener('click', () => {
-      const nome = document.getElementById('nome').value.trim();
-      const cognome = document.getElementById('cognome').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const cDati = document.getElementById('consenso_dati').checked;
-
-      const err = document.getElementById('err1');
-      err.style.display = 'none'; err.textContent = '';
-
-      if (!nome || !cognome || !email) {
-        err.textContent = 'Compila Nome, Cognome ed Email.';
-        err.style.display = 'block'; return;
-      }
-      if (!cDati) {
-        err.textContent = 'Il consenso al trattamento dati è obbligatorio.';
-        err.style.display = 'block'; return;
-      }
-      step1.classList.remove('active');
-      step2.classList.add('active');
-      window.scrollTo({top:0, behavior:'smooth'});
+    document.getElementById('toStep2').addEventListener('click',()=>{
+      const nome=document.getElementById('nome').value.trim();
+      const cognome=document.getElementById('cognome').value.trim();
+      const email=document.getElementById('email').value.trim();
+      const cDati=document.getElementById('consenso_dati').checked;
+      const err=document.getElementById('err1'); err.style.display='none'; err.textContent='';
+      if(!nome||!cognome||!email){err.textContent='Compila Nome, Cognome ed Email.';err.style.display='block';return;}
+      if(!cDati){err.textContent='Il consenso al trattamento dati è obbligatorio.';err.style.display='block';return;}
+      step1.classList.remove('active'); step2.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
     });
 
-    document.getElementById('back').addEventListener('click', () => {
-      step2.classList.remove('active');
-      step1.classList.add('active');
-      window.scrollTo({top:0, behavior:'smooth'});
+    document.getElementById('back').addEventListener('click',()=>{
+      step2.classList.remove('active'); step1.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
     });
 
     // Max 2 lezioni
-    const lessonBoxes = document.querySelectorAll('.lesson');
-    lessonBoxes.forEach(cb => {
-      cb.addEventListener('change', () => {
-        const selected = Array.from(lessonBoxes).filter(x => x.checked);
-        if (selected.length > 2) {
-          cb.checked = false;
-          alert('Puoi selezionare al massimo 2 lezioni.');
-        }
+    const lessonBoxes=document.querySelectorAll('.lesson');
+    lessonBoxes.forEach(cb=>{
+      cb.addEventListener('change',()=>{
+        const selected=[...lessonBoxes].filter(x=>x.checked);
+        if(selected.length>2){cb.checked=false;alert('Puoi selezionare al massimo 2 lezioni.');}
       });
     });
 
-    document.getElementById('submit').addEventListener('click', async () => {
-      const nome = document.getElementById('nome').value.trim();
-      const cognome = document.getElementById('cognome').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const consenso_dati = document.getElementById('consenso_dati').checked;
-      const consenso_media = document.getElementById('consenso_media').checked;
-      const selected = Array.from(lessonBoxes).filter(x => x.checked).map(x => x.value);
+    document.getElementById('submit').addEventListener('click',async()=>{
+      const nome=document.getElementById('nome').value.trim();
+      const cognome=document.getElementById('cognome').value.trim();
+      const email=document.getElementById('email').value.trim();
+      const consenso_dati=document.getElementById('consenso_dati').checked;
+      const consenso_media=document.getElementById('consenso_media').checked;
+      const selected=[...lessonBoxes].filter(x=>x.checked).map(x=>x.value);
 
-      const err = document.getElementById('err2');
-      const ok = document.getElementById('ok');
-      err.style.display = 'none'; ok.style.display = 'none';
+      const err=document.getElementById('err2'), ok=document.getElementById('ok');
+      err.style.display='none'; ok.style.display='none';
 
-      if (selected.length === 0 || selected.length > 2) {
-        err.textContent = 'Seleziona 1 o 2 lezioni.';
-        err.style.display = 'block'; return;
+      if(selected.length===0||selected.length>2){err.textContent='Seleziona 1 o 2 lezioni.';err.style.display='block';return;}
+
+      const payload={action:"register", key:ADMIN_KEY, data:{nome,cognome,email,consenso_dati,consenso_media,lezioni:selected}};
+      try{
+        const res=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const json=await res.json();
+        if(json.ok){
+          ok.innerHTML="<strong>Iscrizione inviata!</strong> Ti abbiamo mandato una mail con il riepilogo.";
+          ok.style.display='block';
+          lessonBoxes.forEach(x=>x.disabled=true);
+        }else{
+          err.textContent=json.error||'Errore durante l’invio.'; err.style.display='block';
+        }
+      }catch(e){
+        err.textContent='Errore di rete o backend non raggiungibile.'; err.style.display='block';
       }
-      if (!BACKEND_URL || BACKEND_URL.includes('PASTE_APPS_SCRIPT_WEB_APP_URL_HERE')) {
-        err.textContent = 'Backend non configurato: incolla l’URL della Web App Apps Script nel codice.';
-        err.style.display = 'block'; return;
-      }
+    });
+  </script>
+</body>
+</html>
 
-      const payload = {
-        action: "register",
-        key: ADMIN_KEY,
-        data: { nome, cognome, email, consenso_dati, consenso_media, lezioni: selected }
-      };
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const json = await res.json();
-        if (json.ok) {
-          ok.innerHTML = "<strong>Iscrizione

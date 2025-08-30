@@ -5,31 +5,34 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Amiche per la LILT — Admin</title>
   <style>
-    :root{
-      --pink:#e91e63; --red:#d32f2f; --border:#eee; --bg:#f7f7fa; --muted:#666; --white:#fff; --black:#111;
-    }
-    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--black)}
-    .wrap{max-width:1080px;margin:24px auto;background:var(--white);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-    header{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--border);padding-bottom:12px;margin-bottom:16px}
-    header img{height:48px;object-fit:contain}
-    .brand{margin-left:auto;text-align:right}
+    :root{--pink:#e91e63;--red:#d32f2f;--border:#222;--bg:#000;--panel:#0f0f12;--muted:#c2c2c2;--white:#fff;}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--white)}
+    .wrap{max-width:1080px;margin:24px auto;background:var(--panel);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
+    header{display:flex;align-items:center;gap:14px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
+    .header-logos{display:flex;align-items:center;gap:12px}
+    .logo-plain img{height:42px;object-fit:contain;display:block}                 /* logo1: trasparente */
+    .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+    .logo-pill-white img{height:42px;object-fit:contain;display:block}            /* logo2: con bianco dietro */
+    .brand{margin-left:auto;text-align:right;color:#fff}
     .brand h1{margin:0;font-size:20px;font-weight:800}
     .brand .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
-    .row{display:flex;flex-wrap:wrap;gap:8px}
-    input{padding:10px 12px;border:1px solid #ccc;border-radius:10px;min-width:260px}
+    .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+    input{padding:10px 12px;border:1px solid var(--border);border-radius:10px;min-width:260px;background:#0b0b0e;color:#fff}
     button{padding:10px 14px;border:0;border-radius:10px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff}
-    .card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;margin:12px 0}
+    .card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b0b0e;margin:12px 0}
     h3{margin:8px 0}
     table{width:100%;border-collapse:collapse}
-    th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+    th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;color:#eee}
     .muted{color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <img src="logo1.webp" alt="Logo 1">
-      <img src="logo2.png" alt="Logo 2">
+      <div class="header-logos">
+        <span class="logo-plain"><img src="logo1.webp" alt="Logo 1"></span>
+        <span class="logo-pill-white"><img src="logo2.png" alt="Logo 2"></span>
+      </div>
       <div class="brand">
         <h1>Amiche per la LILT — Pannello</h1>
         <div class="badge">Elenco partecipanti</div>
@@ -37,38 +40,38 @@
     </header>
 
     <div class="row">
-      <input id="backend" placeholder="URL Web App (Apps Script)">
-      <input id="key" placeholder="Admin key">
+      <input id="backend" placeholder="URL Web App (Apps Script)" value="https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec">
+      <input id="key" placeholder="Admin key" value="Liberamente2025!">
       <button id="load">Carica iscritti</button>
       <button id="csv">Esporta CSV</button>
     </div>
-    <p class="muted">Suggerimento: salva questa pagina nei preferiti con l’URL e la key già compilati.</p>
+    <p class="muted">Suggerimento: salva la pagina con URL e key precompilati.</p>
 
     <div id="out" class="card">Pronto.</div>
   </div>
 
   <script>
-    const out = document.getElementById('out');
+    const out=document.getElementById('out');
 
-    function dl(filename, text){
-      const a = document.createElement('a');
-      a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-      a.download = filename; a.click();
+    function dl(filename,text){
+      const a=document.createElement('a');
+      a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(text);
+      a.download=filename; a.click();
     }
 
-    document.getElementById('load').addEventListener('click', async () => {
-      out.textContent = 'Carico...';
-      const backend = document.getElementById('backend').value.trim();
-      const key = document.getElementById('key').value.trim();
-      if(!backend || !key){ out.textContent = 'Inserisci backend e key.'; return; }
+    document.getElementById('load').addEventListener('click',async()=>{
+      out.textContent='Carico...';
+      const backend=document.getElementById('backend').value.trim();
+      const key=document.getElementById('key').value.trim();
+      if(!backend||!key){ out.textContent='Inserisci backend e key.'; return; }
 
       try{
-        const res = await fetch(`${backend}?action=list&key=${encodeURIComponent(key)}`);
-        const json = await res.json();
-        if(!json.ok){ out.textContent = json.error || 'Errore backend.'; return; }
+        const res=await fetch(`${backend}?action=list&key=${encodeURIComponent(key)}`);
+        const json=await res.json();
+        if(!json.ok){ out.textContent=json.error||'Errore backend.'; return; }
 
         // Raggruppo per lezione
-        const groups = {};
+        const groups={};
         json.rows.forEach(r=>{
           (r.lezioni||[]).forEach(lez=>{
             if(!groups[lez]) groups[lez]=[];
@@ -76,12 +79,12 @@
           });
         });
 
-        let html = '';
+        let html='';
         Object.keys(groups).sort().forEach(lez=>{
-          html += `<div class="card"><h3>${lez} — iscritti: ${groups[lez].length}</h3>`;
-          html += `<table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
+          html+=`<div class="card"><h3>${lez} — iscritti: ${groups[lez].length}</h3>
+                 <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
           groups[lez].forEach(r=>{
-            html += `<tr>
+            html+=`<tr>
               <td>${r.nome}</td>
               <td>${r.cognome}</td>
               <td>${r.email}</td>
@@ -90,13 +93,14 @@
               <td>${r.ts}</td>
             </tr>`;
           });
-          html += `</tbody></table></div>`;
+          html+=`</tbody></table></div>`;
         });
 
-        html += `<div class="card"><h3>Tutti gli iscritti</h3>
-          <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
+        // Lista completa
+        html+=`<div class="card"><h3>Tutti gli iscritti</h3>
+               <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
         json.rows.forEach(r=>{
-          html += `<tr>
+          html+=`<tr>
             <td>${r.nome}</td>
             <td>${r.cognome}</td>
             <td>${r.email}</td>
@@ -106,21 +110,22 @@
             <td>${r.ts}</td>
           </tr>`;
         });
-        html += `</tbody></table></div>`;
+        html+=`</tbody></table></div>`;
 
-        out.innerHTML = html;
+        out.innerHTML=html;
 
-        document.getElementById('csv').onclick = () => {
-          const lines = [['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']];
+        // Export CSV
+        document.getElementById('csv').onclick=()=>{
+          const lines=[['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']];
           json.rows.forEach(r=>{
             lines.push([r.nome,r.cognome,r.email,(r.lezioni||[]).join(' / '),r.consenso_dati?'SI':'NO',r.consenso_media?'SI':'NO',r.ts]);
           });
-          const csv = lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
-          dl('iscritti_amiche_per_la_lilt.csv', csv);
+          const csv=lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+          dl('iscritti_amiche_per_la_lilt.csv',csv);
         };
 
       }catch(e){
-        out.textContent = 'Errore di rete o backend non raggiungibile.';
+        out.textContent='Errore di rete o backend non raggiungibile.';
       }
     });
   </script>
