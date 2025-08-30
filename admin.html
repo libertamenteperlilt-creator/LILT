@@ -24,6 +24,7 @@
     table{width:100%;border-collapse:collapse}
     th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;color:#eee}
     .muted{color:var(--muted);font-size:13px}
+    .group-title{font-weight:900}
   </style>
 </head>
 <body>
@@ -49,10 +50,20 @@
   </div>
 
   <script>
-    // Backend nascosto (hardcoded) + chiave attesa
+    // Backend nascosto (hardcoded) + password attesa
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpT0IQePMKhE0NXW0JNFjtljzYj26R0BzH1_M_t0o4YVAT-lqtodSb4dX0Jo3_vUpT/exec";
     const EXPECTED_KEY = "Liberamente2025!";
-    const out=document.getElementById('out');
+
+    const out = document.getElementById('out');
+
+    const splitLesson = (lez) => {
+      // "09:00 | Yoga con Angela" -> { time:"09:00", course:"Yoga con Angela" }
+      const parts = String(lez||'').split('|');
+      return {
+        time: (parts[0]||'').trim(),
+        course: (parts[1]||'').trim()
+      };
+    };
 
     function dl(filename,text){
       const a=document.createElement('a');
@@ -60,76 +71,85 @@
       a.download=filename; a.click();
     }
 
-    document.getElementById('load').addEventListener('click',async()=>{
-      out.textContent='Carico...';
-      const key=document.getElementById('key').value.trim();
-      if(!key){ out.textContent='Inserisci la password.'; return; }
-      if(key!==EXPECTED_KEY){ out.textContent='Password errata.'; return; }
+    document.getElementById('load').addEventListener('click', async () => {
+      out.textContent = 'Carico...';
+      const key = document.getElementById('key').value.trim();
+      if (!key) { out.textContent = 'Inserisci la password.'; return; }
+      if (key !== EXPECTED_KEY) { out.textContent = 'Password errata.'; return; }
 
       try{
-        const res=await fetch(`${BACKEND_URL}?action=list&key=${encodeURIComponent(key)}`);
-        const json=await res.json();
-        if(!json.ok){ out.textContent=json.error||'Errore backend.'; return; }
+        const res = await fetch(`${BACKEND_URL}?action=list&key=${encodeURIComponent(key)}`);
+        const json = await res.json();
+        if (!json.ok) { out.textContent = json.error || 'Errore backend.'; return; }
 
-        // Raggruppo per lezione
-        const groups={};
+        // Raggruppo per lezione (chiave = stringa completa con orario)
+        const groups = {};
         json.rows.forEach(r=>{
           (r.lezioni||[]).forEach(lez=>{
-            if(!groups[lez]) groups[lez]=[];
+            if (!groups[lez]) groups[lez] = [];
             groups[lez].push(r);
           });
         });
 
-        let html='';
-        Object.keys(groups).sort().forEach(lez=>{
-          html+=`<div class="card"><h3>${lez} — iscritti: ${groups[lez].length}</h3>
-                 <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
-          groups[lez].forEach(r=>{
-            html+=`<tr>
+        // Costruisco HTML
+        let html = '';
+
+        // Per ogni lezione: TITOLO "ora — corso — totale", poi tabella senza timestamp
+        Object.keys(groups).sort().forEach(lezStr=>{
+          const {time, course} = splitLesson(lezStr);
+          html += `<div class="card">
+            <div class="group-title">${time} — ${course} — iscritti: ${groups[lezStr].length}</div>
+            <table>
+              <thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Consenso dati</th><th>Foto/Video</th></tr></thead>
+              <tbody>`;
+          groups[lezStr].forEach(r=>{
+            html += `<tr>
               <td>${r.nome}</td>
               <td>${r.cognome}</td>
               <td>${r.email}</td>
               <td>${r.consenso_dati ? 'SI' : 'NO'}</td>
               <td>${r.consenso_media ? 'SI' : 'NO'}</td>
-              <td>${r.ts}</td>
             </tr>`;
           });
-          html+=`</tbody></table></div>`;
+          html += `</tbody></table></div>`;
         });
 
-        // Lista completa
-        html+=`<div class="card"><h3>Tutti gli iscritti</h3>
-               <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni</th><th>Dati</th><th>Foto/Video</th><th>Timestamp</th></tr></thead><tbody>`;
+        // Lista completa: lezioni senza orario (solo nomi corsi)
+        html += `<div class="card">
+          <h3>Tutti gli iscritti</h3>
+          <table>
+            <thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Lezioni (solo corsi)</th><th>Consenso dati</th><th>Foto/Video</th></tr></thead>
+            <tbody>`;
         json.rows.forEach(r=>{
-          html+=`<tr>
+          const coursesOnly = (r.lezioni||[]).map(z=>splitLesson(z).course).join(' | ');
+          html += `<tr>
             <td>${r.nome}</td>
             <td>${r.cognome}</td>
             <td>${r.email}</td>
-            <td>${(r.lezioni||[]).join(' | ')}</td>
+            <td>${coursesOnly}</td>
             <td>${r.consenso_dati ? 'SI' : 'NO'}</td>
             <td>${r.consenso_media ? 'SI' : 'NO'}</td>
-            <td>${r.ts}</td>
           </tr>`;
         });
-        html+=`</tbody></table></div>`;
+        html += `</tbody></table></div>`;
 
-        out.innerHTML=html;
+        out.innerHTML = html;
 
-        // Export CSV
-        document.getElementById('csv').onclick=()=>{
-          const lines=[['Nome','Cognome','Email','Lezioni','Consenso_dati','Consenso_media','Timestamp']];
+        // CSV export: senza timestamp; lezioni solo corsi
+        document.getElementById('csv').onclick = () => {
+          const lines = [['Nome','Cognome','Email','Lezioni (solo corsi)','Consenso_dati','Consenso_media']];
           json.rows.forEach(r=>{
-            lines.push([r.nome,r.cognome,r.email,(r.lezioni||[]).join(' / '),r.consenso_dati?'SI':'NO',r.consenso_media?'SI':'NO',r.ts]);
+            const coursesOnly = (r.lezioni||[]).map(z=>splitLesson(z).course).join(' / ');
+            lines.push([r.nome, r.cognome, r.email, coursesOnly, r.consenso_dati?'SI':'NO', r.consenso_media?'SI':'NO']);
           });
-          const csv=lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
-          dl('iscritti_amiche_per_la_lilt.csv',csv);
+          const csv = lines.map(a=>a.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+          dl('iscritti_amiche_per_la_lilt.csv', csv);
         };
 
       }catch(e){
-        out.textContent='Errore di rete o backend non raggiungibile.';
+        out.textContent = 'Errore di rete o backend non raggiungibile.';
       }
     });
   </script>
 </body>
 </html>
-
