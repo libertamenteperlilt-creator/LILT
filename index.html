@@ -16,18 +16,11 @@
     .wrap{max-width:880px;margin:16px auto;background:var(--panel);
       padding:20px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid var(--border)}
     header{display:flex;align-items:center;gap:12px;background:#000;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border); flex-wrap:wrap}
-    .header-logos{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0}
-    .logo-plain img,
-    .logo-pill-white img{
-      display:block;
-      height:auto;
-      max-height:42px;
-      width:auto;
-      max-width:100%;
-      object-fit:contain;
-    }
-    .logo-pill-white{background:#fff;border-radius:12px;padding:6px 15px;display:inline-flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.6);max-width:100%}
-    .brand{flex:1 1 220px; text-align:right;color:#fff;min-width:0}
+    .header-logos{display:flex;align-items:center;gap:10px;flex:1 1 auto}
+    .logo-plain img{height:42px;object-fit:contain;display:block}
+    .logo-pill-white{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+    .logo-pill-white img{height:42px;object-fit:contain;display:block}
+    .brand{flex:1 1 220px; text-align:right;color:#fff}
     .brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
     .brand span{color:var(--pink);font-weight:700}
     .badge{display:inline-block;background:linear-gradient(90deg,var(--pink),var(--red));color:#fff;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-top:6px}
@@ -72,7 +65,7 @@
       .brand{flex:1 1 100%; text-align:center}
       .header-logos{justify-content:center; width:100%}
       .btns button{width:100%}
-      .logo-plain img, .logo-pill-white img{max-height:36px}
+      .logo-plain img, .logo-pill-white img{height:36px}
       h2{font-size:18px}
     }
   </style>
@@ -96,7 +89,13 @@
       <p class="muted">Le lezioni si selezionano <strong>dopo</strong> aver inserito i dati e i consensi (max 2).</p>
       <div class="schedule">
         <div class="slot"><time>09:00</time><div><div class="type">Yoga</div><div class="muted">con Angela</div></div></div>
-        <div class="slot"><time>10:00</time><div><div class="type">Pilates</div><div class="muted">con Valeria</div></div></div>
+        <div class="slot">
+          <time><s style="color:red;">10:00</s></time>
+          <div>
+            <div class="type"><s style="color:red;">Pilates</s> <span style="color:green;font-weight:bold;">AL COMPLETO</span></div>
+            <div class="muted"><s style="color:red;">con Valeria</s></div>
+          </div>
+        </div>
         <div class="slot"><time>11:00</time><div><div class="type">Pilates</div><div class="muted">con Daniela</div></div></div>
         <div class="slot"><time>14:00</time><div><div class="type">Pilates</div><div class="muted">con Debora</div></div></div>
         <div class="slot"><time>15:00</time><div><div class="type">Pilates</div><div class="muted">con Mara</div></div></div>
@@ -135,7 +134,7 @@
       <h2>2) Scegli fino a 2 lezioni</h2>
       <div class="grid">
         <label><input type="checkbox" class="lesson" value="09:00 | Yoga con Angela"> 09:00 — Yoga con Angela</label>
-        <label><input type="checkbox" class="lesson" value="10:00 | Pilates con Valeria"> 10:00 — Pilates con Valeria</label>
+        
         <label><input type="checkbox" class="lesson" value="11:00 | Pilates con Daniela"> 11:00 — Pilates con Daniela</label>
         <label><input type="checkbox" class="lesson" value="14:00 | Pilates con Debora"> 14:00 — Pilates con Debora</label>
         <label><input type="checkbox" class="lesson" value="15:00 | Pilates con Mara"> 15:00 — Pilates con Mara</label>
@@ -228,6 +227,3 @@
   </script>
 </body>
 </html>
-
-
-
