@@ -89,76 +89,15 @@
       <p class="muted">Le lezioni si selezionano <strong>dopo</strong> aver inserito i dati e i consensi (max 2).</p>
       <div class="schedule">
         <div class="slot"><time>09:00</time><div><div class="type">Yoga</div><div class="muted">con Angela</div></div></div>
-
-        <div class="slot">
-          <time><s style="color:red;">10:00</s></time>
-          <div>
-            <div class="type"><s style="color:red;">Pilates</s> <span style="color:green;font-weight:bold;">AL COMPLETO</span></div>
-            <div class="muted"><s style="color:red;">con Valeria</s></div>
-          </div>
-        </div>
-
-        <div class="slot">
-          <time><s style="color:red;">11:00</s></time>
-          <div>
-            <div class="type"><s style="color:red;">Pilates</s> <span style="color:green;font-weight:bold;">AL COMPLETO</span></div>
-            <div class="muted"><s style="color:red;">con Daniela</s></div>
-          </div>
-        </div>
+        <div class="slot"><time>10:00</time><div><div class="type">Pilates</div><div class="muted">con Valeria</div></div></div>
+        <div class="slot"><time>11:00</time><div><div class="type">Pilates</div><div class="muted">con Daniela</div></div></div>
         <div class="slot"><time>14:00</time><div><div class="type">Pilates</div><div class="muted">con Debora</div></div></div>
-
         <div class="slot"><time>15:00</time><div><div class="type">Pilates</div><div class="muted">con Mara</div></div></div>
-
-        <div class="slot">
-          <time><s style="color:red;">16:00</s></time>
-          <div>
-            <div class="type"><s style="color:red;">Yoga</s> <span style="color:green;font-weight:bold;">AL COMPLETO</span></div>
-            <div class="muted"><s style="color:red;">con Valentina</s></div>
-          </div>
-        </div>
+        <div class="slot"><time>16:00</time><div><div class="type">Yoga</div><div class="muted">con Valentina</div></div></div>
       </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- STEP 1: Dati + Consensi -->
-    <section id="step1" class="step active">
-      <h2>1) Dati partecipante</h2>
-      <div class="grid two">
-        <div><label for="nome">Nome *</label><input id="nome" type="text" autocomplete="given-name" required></div>
-        <div><label for="cognome">Cognome *</label><input id="cognome" type="text" autocomplete="family-name" required></div>
-        <div style="grid-column:1/-1"><label for="email">Email *</label><input id="email" type="email" autocomplete="email" required></div>
+    <div style="margin-top:14px; font-weight:900; color:#1fc47a; font-size:18px; text-align:center;">
+        ISCRIZIONI TERMINATE!
       </div>
-      <div class="card" style="margin-top:10px">
-        <h3 style="margin:0 0 6px">Consensi</h3>
-        <div class="consenso">
-          <input id="consenso_dati" type="checkbox" required aria-required="true">
-          <label for="consenso_dati">Acconsento al trattamento dei dati personali (GDPR). *</label>
-        </div>
-        <div class="consenso">
-          <input id="consenso_media" type="checkbox" required aria-required="true">
-          <label for="consenso_media">Acconsento all’utilizzo di immagini e riprese video. *</label>
-        </div>
-        <p class="muted">Entrambi i consensi sono obbligatori per partecipare.</p>
-      </div>
-      <div id="err1" class="err" style="display:none;"></div>
-      <div class="btns"><button class="primary" id="toStep2">Prosegui alla scelta lezioni</button></div>
-    </section>
-
-    <!-- STEP 2: Scelta lezioni (max 2) + invio -->
-    <section id="step2" class="step">
-      <h2>2) Scegli fino a 2 lezioni</h2>
-      <div class="grid">
-        <label><input type="checkbox" class="lesson" value="09:00 | Yoga con Angela"> 09:00 — Yoga con Angela</label>
-        
-        <label><input type="checkbox" class="lesson" value="14:00 | Pilates con Debora"> 14:00 — Pilates con Debora</label>
-        <label><input type="checkbox" class="lesson" value="15:00 | Pilates con Mara"> 15:00 — Pilates con Mara</label>
-      </div>
-      <div id="err2" class="err" style="display:none;"></div>
-      <div class="btns"><button class="ghost" id="back">Indietro</button><button class="primary" id="submit">Invia iscrizione</button></div>
-      <div id="ok" class="success" style="display:none;"></div>
-    </section>
-
     <footer>© Amiche per la LILT</footer>
   </div>
 
